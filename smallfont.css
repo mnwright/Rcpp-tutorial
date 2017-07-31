@@ -1,0 +1,24 @@
+.smallfont pre {
+    font-size: 18px;
+    line-height: 20px;
+}
+
+div.footnotes {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 10px;
+  width: 80%;
+  font-size: 0.6em;
+}
+
+tr {
+  background: white !important;
+  color: black !important;
+}
+
+th {
+  background: LightGray !important;
+  color: black !important;
+}
+
+

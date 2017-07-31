@@ -1,0 +1,208 @@
+---
+title: "Rcpp Tutorial"
+author: "Marvin N. Wright"
+date: "Aug 1, 2017"
+output: 
+  ioslides_presentation: 
+    transition: faster
+    css: smallfont.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+# Why Rcpp?
+
+## Sometimes R is very slow
+
+* Random element-wise access
+* Loops that cannot be vectorized
+* Recursive functions
+
+## Sometimes R is very slow
+
+Fibonacci sequence
+```{r}
+fibR <- function(n) {
+  if (n < 2) {
+    return(1)
+  } else {
+    return(fibR(n - 1) + fibR(n - 2))
+  }
+}
+```
+
+```{r}
+system.time(fibR(40))
+```
+
+<div class="footnotes">Example from http://gallery.rcpp.org/articles/fibonacci-sequence/.</div>
+
+# How to use Rcpp?
+
+## Inline C++ code
+
+```{r}
+library(Rcpp)
+
+cppFunction("double mysum(double a, double b) {
+   return a + b;         
+}")
+
+mysum(3.5, 2.1)
+```
+
+## Inline C++ code (using vectors)
+
+```{r}
+cppFunction("double myvecsum(Rcpp::NumericVector v) {
+  double result = 0;
+  for (auto& x : v) {
+    result += x;
+  }
+  return result;
+}")
+
+myvecsum(c(3.5, 2.1, 4.6))
+```
+
+## C++ files
+
+Save to `mysum.cpp`:
+```{Rcpp, eval=FALSE}
+#include <Rcpp.h>
+
+// [[Rcpp::export]]
+double mysum(double a, double b) {
+   return a + b;         
+}
+```
+
+From R:
+```{r}
+sourceCpp("mysum.cpp")
+mysum(3, 4)
+```
+
+## Rcpp in R Markdown
+
+Just use:
+
+    ```{Rcpp}`r ''`
+    // [[Rcpp::export]]
+    double mysum5(double a, double b) {
+      return a + b;         
+    }
+    ```
+
+## Rcpp Sugar
+
+* Rcpp provides typical R functions in C++
+* Examples: `min()`, `max()`, `sum()`, `mean()`, `rnorm()`, `pnorm()`, `dnorm()`, `qnorm()`, etc.
+
+
+```{r}
+cppFunction("Rcpp::NumericVector myexp(Rcpp::NumericVector vec) {
+  return Rcpp::exp(vec);
+}")
+
+myexp(c(5, 4, 7))
+```
+
+## Rcpp Sugar 
+
+Rcpp uses the R random number generator
+```{r}
+cppFunction("Rcpp::NumericVector myrnorm(int n) {
+  return Rcpp::rnorm(n);
+}")
+
+set.seed(10)
+rnorm(5)
+
+set.seed(10)
+myrnorm(5)
+```
+
+## Rcpp data types
+
+|Value | R vector|Rcpp vector|Rcpp matrix|C++ scalar|
+|:---:|:---:|:---:|:---:|:---:|
+|Logical|`logical`  |`LogicalVector`| `LogicalMatrix`|`bool`|
+|Integer|`integer`  |`IntegerVector`|`IntegerMatrix`|`int`|
+|Real|`numeric` |`NumericVector`|`NumericMatrix`|`double`|
+
+<div class="footnotes">Complete table at https://teuder.github.io/rcpp4everyone_en/.</div>
+
+# How fast is Rcpp? 
+
+## Back to Fibonacci numbers
+
+```{r}
+fibR <- function(n) {
+  if (n < 2) {
+    return(1)
+  } else {
+    return(fibR(n - 1) + fibR(n - 2))
+  }
+}
+```
+
+```{Rcpp}
+// [[Rcpp::export]]
+int fibCpp(int n) {
+  if (n < 2) {
+    return 1;
+  } else {
+    return fibCpp(n - 1) + fibCpp(n - 2);
+  }
+}
+```
+
+## Back to Fibonacci numbers
+
+```{r}
+library(microbenchmark)
+microbenchmark(R = fibR(40), 
+               Cpp = fibCpp(40), 
+               times = 1, unit = "s")
+```
+
+# How to use Rcpp in a package? 
+
+## Live demonstration
+
+# Final remarks
+
+## Discussion
+
+### Advantages
+* Fast and memory efficient (potentially)
+* Object-oriented
+* Great libraries available, e.g. Eigen, Armadillo
+
+### Disadvantages
+* More work
+* Code less readable
+* More bugs?
+* Not always faster! 
+
+## Installation
+
+1. System preparation
+    * Linux: Install R development package, .e.g., `r-devel` or `r-base-dev`
+    * Windows: Install RTools from https://cran.r-project.org/bin/windows/Rtools/
+    * Mac: Install Xcode command line tools, i.e., `xcode-select --install`
+2. Install `Rcpp` package: `install.packages("Rcpp")`
+
+## Resources
+
+* Rcpp website: http://www.rcpp.org
+* Rcpp paper in JSS: http://dx.doi.org/10.18637/jss.v040.i08
+* Rcpp documentation (technical): http://dirk.eddelbuettel.com/code/rcpp/html/
+* Rcpp quick reference: https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-quickref.pdf
+* Chapter in Hadley Wickham's book: http://adv-r.had.co.nz/Rcpp.html
+* Rcpp gallery: http://gallery.rcpp.org/
+
+
