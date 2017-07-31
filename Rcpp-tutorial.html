@@ -123,7 +123,7 @@
 <pre class = 'prettyprint lang-r'>system.time(fibR(40))</pre>
 
 <pre >##    user  system elapsed 
-##  98.008   0.300  98.573</pre>
+## 101.490   0.255 101.924</pre>
 
 <div class="footnotes">
 Example from <a href='http://gallery.rcpp.org/articles/fibonacci-sequence/' title=''>http://gallery.rcpp.org/articles/fibonacci-sequence/</a>.</div>
@@ -284,11 +284,11 @@ microbenchmark(R = fibR(40),
 
 <pre >## Unit: seconds
 ##  expr         min          lq        mean      median          uq
-##     R 103.8222172 103.8222172 103.8222172 103.8222172 103.8222172
-##   Cpp   0.3535692   0.3535692   0.3535692   0.3535692   0.3535692
+##     R 102.0058883 102.0058883 102.0058883 102.0058883 102.0058883
+##   Cpp   0.3475778   0.3475778   0.3475778   0.3475778   0.3475778
 ##          max neval
-##  103.8222172     1
-##    0.3535692     1</pre>
+##  102.0058883     1
+##    0.3475778     1</pre>
 
 </article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>How to use Rcpp in a package?</h2></hgroup><article  id="how-to-use-rcpp-in-a-package">
 
